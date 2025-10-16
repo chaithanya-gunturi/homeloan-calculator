@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NCNDY87RS7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NCNDY87RS7');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8120155219049564"
+     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <title>Home Loan Repayment Calculator</title>
+   <meta name="keywords" content="home loan calculator, mortgage repayment, extra payments, interest rate change, loan schedule">
+	<meta name="author" content="Calcify Tools">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Estimate your home loan repayments with extra payments and rate changes. Includes chart, schedule, and CSV export.">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+      color: #333;
+    }
+
+    h2 {
+      background: #3498db;
+      color: white;
+      padding: 20px;
+      margin: 0;
+      text-align: center;
+      font-size: 24px;
+    }
+    .form-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+    }
+    .form-section {
+      flex: 1 1 300px;
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .form-section h3 {
+      margin-top: 0;
+      font-size: 18px;
+      color: #2c3e50;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+    input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 6px;
+      margin-top: 4px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .oneoff-row, .ratechange-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    .oneoff-row label, .ratechange-row label {
+      flex: 1 1 200px;
+    }
+    button {
+      padding: 10px 18px;
+      font-size: 15px;
+      border: none;
+      border-radius: 4px;
+      background: #3498db;
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    .removeOneOff, #removeRateChange, #removeRecurring {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .removeOneOff:hover, #removeRateChange:hover, #removeRecurring:hover {
+      background: #c0392b;
+    }
+    .form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: flex-start;
+      padding: 20px;
+    }
+    .adsbygoogle {
+      margin: 30px auto;
+      max-width: 100%;
+    }
+    .hidden {
+      display: none;
+    }
+    .fade-in {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    #summary {
+      padding: 0 20px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #2c3e50;
+    }
+    #loanChart {
+      width: 100%;
+      max-width: 1000px;
+      margin: 30px auto;
+      display: block;
+    }
+	#loanChart.hidden {
+	display: none;
+	height: 0;
+	margin: 0;
+	padding: 0;
+	}
+
+    #schedule, #rateChangeTable {
+      padding: 0 20px;
+      overflow-x: auto;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #ecf0f1;
+      font-weight: 600;
+    }
+    footer {
+      text-align: center;
+      padding: 30px 20px 20px;
+      font-size: 14px;
+      color: #555;
+    }
+    details summary {
+      cursor: pointer;
+      font-size: 16px;
+      color: #2c3e50;
+    }
+    details p {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h2>Home Loan Repayment Calculator</h2>
+
+  <!-- Ad Block 1 -->
+<!--   <ins class="adsbygoogle"
+       style="display:block; text-align:center;"
+       data-ad-client="ca-pub-8120155219049564"
+       data-ad-slot="1111111111"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+
+  <div class="form-container">
+    <div class="form-section">
+      <h3>Loan Details</h3>
+      <label>Loan Amount ($): <input type="number" id="amount" required min="1000" step="1000"></label>
+      <label>Interest Rate (% p.a.): <input type="number" id="rate" required min="0.1" max="20" step="0.01"></label>
+      <label>Loan Term (years): <input type="number" id="years" required min="1" max="50"></label>
+    </div>
+
+    <div class="form-section">
+      <h3>Extra Payments (Optional)</h3>
+      <div id="oneOffContainer"></div>
+      <button type="button" id="addOneOff" role="button" aria-label="Add another one-off payment">+ Add Another One‑off Payment</button>
+      <div style="margin-top: 15px;"></div>
+      <div id="recurringContainer"></div>
+      <button type="button" id="addRecurring" role="button" aria-label="Add recurring extra payment">+ Add Recurring Extra Payment</button>
+    </div>
+
+    <div class="form-section">
+      <h3>Rate Change (Optional)</h3>
+      <div id="rateChangeContainer"></div>
+      <button type="button" id="addRateChange" role="button" aria-label="Add interest rate change">+ Add Rate Change</button>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button id="calcBtn" role="button" aria-label="Calculate loan repayment">Calculate</button>
+    <button id="exportBtn" role="button" aria-label="Export repayment schedule as CSV">Export Schedule (CSV)</button>
+  </div>
+
+  <!-- Ad Block 2 -->
+<!--   <ins class="adsbygoogle"
+       style="display:block; text-align:center;"
+       data-ad-client="ca-pub-8120155219049564"
+       data-ad-slot="2222222222"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+
+<p id="summary" class="hidden" aria-live="polite" aria-label="Loan summary output"></p>
+<canvas id="loanChart" width="400" height="200" class="hidden" aria-label="Loan repayment chart" role="img"></canvas>
+
+  <!-- Ad Block 3 -->
+<!--   <ins class="adsbygoogle"
+       style="display:block; text-align:center;"
+       data-ad-client="ca-pub-8120155219049564"
+       data-ad-slot="3333333333"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+
+  <div id="schedule" class="hidden"></div>
+  <div id="rateChangeTable" class="hidden"></div>
+
+  <footer>
+    <details>
+      <summary><strong>Privacy Policy</strong></summary>
+      <p>We respect your privacy. This site does not collect personal data or store user inputs. Third-party services like Google AdSense may use cookies to personalize ads. For more details, visit <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a>.</p>
+    </details>
+    <details style="margin-top: 15px;">
+      <summary><strong>Terms & Conditions</strong></summary>
+      <p>This calculator is provided for informational purposes only. Results are estimates and do not constitute financial advice. Use at your own discretion.</p>
+    </details>
+    <p style="margin-top: 20px;">&copy; 2025 Calcify Tools</p>
+  </footer>
+  
+  <script>
+  let chartInstance;
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("calcBtn").addEventListener("click", calculateLoan);
+  document.getElementById("exportBtn").addEventListener("click", exportCSV);
+
+  document.getElementById("addOneOff").addEventListener("click", () => {
+    const container = document.getElementById("oneOffContainer");
+    const div = document.createElement("div");
+    div.classList.add("oneoff-row");
+    div.innerHTML = `
+      <label>One‑off Extra Payment ($): 
+        <input type="number" class="extraOnce">
+      </label>
+      <label>Month: 
+        <input type="number" class="extraOnceMonth" placeholder="e.g. 12">
+      </label>
+      <button type="button" class="removeOneOff">❌ Remove</button>
+    `;
+    container.appendChild(div);
+
+    div.querySelector(".removeOneOff").addEventListener("click", () => {
+      container.removeChild(div);
+    });
+  });
+
+  document.getElementById("addRateChange").addEventListener("click", () => {
+    const container = document.getElementById("rateChangeContainer");
+    container.innerHTML = `
+      <label>Rate Change (%): 
+        <input type="number" id="rateChangeValue" step="0.01" placeholder="+0.25 or -0.50">
+      </label>
+      <label>Month of Change: 
+        <input type="number" id="rateChangeMonth" placeholder="e.g. 24">
+      </label>
+      <button type="button" id="removeRateChange">❌ Remove</button>
+    `;
+    document.getElementById("addRateChange").style.display = "none";
+
+    document.getElementById("removeRateChange").addEventListener("click", () => {
+      container.innerHTML = "";
+      document.getElementById("addRateChange").style.display = "inline-block";
+    });
+  });
+
+  document.getElementById("addRecurring").addEventListener("click", () => {
+    const container = document.getElementById("recurringContainer");
+    container.innerHTML = `
+      <label>Recurring Extra Payment ($ per month): 
+        <input type="number" id="extraRecurring">
+      </label>
+      <button type="button" id="removeRecurring">❌ Remove</button>
+    `;
+    document.getElementById("addRecurring").style.display = "none";
+
+    document.getElementById("removeRecurring").addEventListener("click", () => {
+      container.innerHTML = "";
+      document.getElementById("addRecurring").style.display = "inline-block";
+    });
+  });
+});
+
+function calculateLoan() {
+  const amount = parseFloat(document.getElementById("amount").value);
+  const rate = parseFloat(document.getElementById("rate").value);
+  const years = parseInt(document.getElementById("years").value);
+
+  const rateChangeValue = parseFloat(document.getElementById("rateChangeValue")?.value);
+  const rateChangeMonth = parseInt(document.getElementById("rateChangeMonth")?.value);
+  const hasRateChange = !isNaN(rateChangeValue) && rateChangeMonth > 0;
+
+  const extraRecurringInput = document.getElementById("extraRecurring");
+  const extraRecurring = extraRecurringInput ? parseFloat(extraRecurringInput.value) || 0 : 0;
+
+  if (!amount || !rate || !years) {
+    alert("Please fill in Loan Amount, Interest Rate, and Loan Term.");
+    return;
+  }
+  if (amount < 1000 || rate <= 0 || rate > 20 || years <= 0 || years > 50) {
+    alert("Please enter valid values for amount, rate, and term.");
+    return;
+  }
+
+  const monthlyRate = rate / 100 / 12;
+  const n = years * 12;
+  const baseRepayment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -n));
+
+  const oneOffPayments = [];
+  document.querySelectorAll(".oneoff-row").forEach(row => {
+    const amt = parseFloat(row.querySelector(".extraOnce")?.value) || 0;
+    const mth = parseInt(row.querySelector(".extraOnceMonth")?.value);
+    if (amt > 0 && mth > 0) oneOffPayments.push({ month: mth, amount: amt });
+  });
+
+  let balanceStd = amount, monthStd = 0, totalInterestStd = 0;
+  const scheduleStd = [];
+  while (balanceStd > 0 && monthStd < n + 1) {
+    monthStd++;
+    const interest = balanceStd * monthlyRate;
+    let principal = baseRepayment - interest;
+    if (principal + interest > balanceStd + interest) principal = balanceStd;
+    balanceStd -= principal;
+    totalInterestStd += interest;
+    scheduleStd.push({month: monthStd, payment: baseRepayment, interest, principal, extra: 0, balance: balanceStd > 0 ? balanceStd : 0});
+    if (balanceStd <= 0) break;
+  }
+
+  let balance = amount, month = 0, totalInterest = 0;
+  let currentRate = monthlyRate;
+  let currentEMI = baseRepayment;
+  let remainingMonths = n;
+  const scheduleExtra = [];
+  const emiUpdates = [];
+
+  while (balance > 0 && month < n + 1) {
+    month++;
+
+    if (hasRateChange && month === rateChangeMonth) {
+      const newAnnualRate = rate + rateChangeValue;
+      currentRate = newAnnualRate / 100 / 12;
+      remainingMonths = n - month + 1;
+      currentEMI = (balance * currentRate) / (1 - Math.pow(1 + currentRate, -remainingMonths));
+      emiUpdates.push({ month, newRate: newAnnualRate, newEMI: currentEMI });
+    }
+
+    const interest = balance * currentRate;
+    let principal = currentEMI - interest;
+    let extra = 0;
+
+    oneOffPayments.forEach(p => {
+      if (p.month === month) extra += p.amount;
+    });
+    if (extraRecurring > 0) extra += extraRecurring;
+
+    if (principal + interest + extra > balance + interest) {
+      principal = balance;
+      extra = 0;
+    }
+
+    balance -= (principal + extra);
+    totalInterest += interest;
+
+    scheduleExtra.push({month, payment: currentEMI, interest, principal, extra, balance: balance > 0 ? balance : 0});
+    if (balance <= 0) break;
+  }
+
+  const monthsSaved = monthStd - month;
+  const interestSaved = totalInterestStd - totalInterest;
+
+  const summary = document.getElementById("summary");
+  summary.innerText =
+    `Standard payoff: ${monthStd} months (${(monthStd/12).toFixed(1)} years), Interest: $${totalInterestStd.toFixed(2)}.
+     With extra payments: ${month} months (${(month/12).toFixed(1)} years), Interest: $${totalInterest.toFixed(2)}.
+     ✅ You save ${monthsSaved} months and $${interestSaved.toFixed(2)} in interest!`;
+  summary.classList.remove("hidden");
+  summary.classList.add("fade-in");
+	window.currentScheduleStd = scheduleStd;
+	window.currentScheduleExtra = scheduleExtra;
+  renderTable(scheduleStd, scheduleExtra);
+  renderChart(scheduleStd, scheduleExtra);
+  renderRateChangeTable(emiUpdates);
+
+  document.getElementById("loanChart").classList.remove("hidden");
+  document.getElementById("loanChart").classList.add("fade-in");
+  document.getElementById("schedule").classList.remove("hidden");
+  document.getElementById("schedule").classList.add("fade-in");
+
+}
+
+function renderRateChangeTable(emiUpdates) {
+  const container = document.getElementById("rateChangeTable");
+  if (!emiUpdates.length) {
+    container.classList.add("hidden");
+    return;
+  }
+
+  let html = `<h3>Rate Change Impact</h3>
+    <table border="1" cellpadding="5" cellspacing="0">
+      <tr><th>Month</th><th>New Rate (%)</th><th>Revised EMI ($)</th></tr>`;
+  emiUpdates.forEach(u => {
+    html += `<tr>
+      <td>${u.month}</td>
+      <td>${u.newRate.toFixed(2)}</td>
+      <td>$${u.newEMI.toFixed(2)}</td>
+    </tr>`;
+  });
+  html += "</table>";
+  container.innerHTML = html;
+  container.classList.remove("hidden");
+  container.classList.add("fade-in");
+}
+
+function renderRateChangeTable(emiUpdates) {
+  const container = document.getElementById("rateChangeTable");
+  if (!emiUpdates.length) {
+    container.classList.add("hidden");
+    return;
+  }
+
+  let html = `<h3>Rate Change Impact</h3>
+    <table border="1" cellpadding="5" cellspacing="0">
+      <tr><th>Month</th><th>New Rate (%)</th><th>Revised EMI ($)</th></tr>`;
+  emiUpdates.forEach(u => {
+    html += `<tr>
+      <td>${u.month}</td>
+      <td>${u.newRate.toFixed(2)}</td>
+      <td>$${u.newEMI.toFixed(2)}</td>
+    </tr>`;
+  });
+  html += "</table>";
+  container.innerHTML = html;
+  container.classList.remove("hidden");
+  container.classList.add("fade-in");
+}
+
+function renderChart(scheduleStd, scheduleExtra) {
+  const ctx = document.getElementById("loanChart").getContext("2d");
+  const labels = Array.from({length: Math.max(scheduleStd.length, scheduleExtra.length)}, (_, i) => i+1);
+  const balancesStd = scheduleStd.map(r => r.balance);
+  const balancesExtra = scheduleExtra.map(r => r.balance);
+
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        { label: "Standard Repayments", data: balancesStd, borderColor: "#e74c3c", fill: false, tension: 0.1 },
+        { label: "With Extra Payments", data: balancesExtra, borderColor: "#27ae60", fill: false, tension: 0.1 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } },
+      scales: {
+        x: { title: { display: true, text: "Month" } },
+        y: { title: { display: true, text: "Balance ($)" } }
+      }
+    }
+  });
+}
+
+function renderTable(scheduleStd, scheduleExtra) {
+  let html = `
+    <table border="1" cellpadding="5" cellspacing="0">
+      <tr>
+        <th rowspan="2">Month</th>
+        <th colspan="4">Standard Repayments</th>
+        <th colspan="5">With Extra Payments</th>
+      </tr>
+      <tr>
+        <th>Payment</th><th>Interest</th><th>Principal</th><th>Balance</th>
+        <th>Payment</th><th>Interest</th><th>Principal</th><th>Extra</th><th>Balance</th>
+      </tr>`;
+
+  const maxMonths = Math.max(scheduleStd.length, scheduleExtra.length);
+  for (let i = 0; i < maxMonths; i++) {
+    const s = scheduleStd[i] || {};
+    const e = scheduleExtra[i] || {};
+    html += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${s.payment !== undefined ? "$" + s.payment.toFixed(2) : "-"}</td>
+        <td>${s.interest !== undefined ? "$" + s.interest.toFixed(2) : "-"}</td>
+        <td>${s.principal !== undefined ? "$" + s.principal.toFixed(2) : "-"}</td>
+        <td>${s.balance !== undefined ? "$" + s.balance.toFixed(2) : "-"}</td>
+        <td>${e.payment !== undefined ? "$" + e.payment.toFixed(2) : "-"}</td>
+        <td>${e.interest !== undefined ? "$" + e.interest.toFixed(2) : "-"}</td>
+        <td>${e.principal !== undefined ? "$" + e.principal.toFixed(2) : "-"}</td>
+        <td>${e.extra !== undefined ? "$" + e.extra.toFixed(2) : "-"}</td>
+        <td>${e.balance !== undefined ? "$" + e.balance.toFixed(2) : "-"}</td>
+      </tr>`;
+  }
+
+  html += "</table>";
+  const container = document.getElementById("schedule");
+  container.innerHTML = html;
+}
+
+function renderChart(scheduleStd, scheduleExtra) {
+  const ctx = document.getElementById("loanChart").getContext("2d");
+
+  const labels = Array.from({ length: Math.max(scheduleStd.length, scheduleExtra.length) }, (_, i) => i + 1);
+  const balancesStd = scheduleStd.map(r => r.balance);
+  const balancesExtra = scheduleExtra.map(r => r.balance);
+
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Standard Repayments",
+          data: balancesStd,
+          borderColor: "#e74c3c",
+          backgroundColor: "transparent",
+          tension: 0.1
+        },
+        {
+          label: "With Extra Payments",
+          data: balancesExtra,
+          borderColor: "#27ae60",
+          backgroundColor: "transparent",
+          tension: 0.1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: "top"
+        },
+        tooltip: {
+          mode: "index",
+          intersect: false
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Month"
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Balance ($)"
+          },
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
+function renderRateChangeTable(emiUpdates) {
+  const container = document.getElementById("rateChangeTable");
+  if (!emiUpdates.length) {
+    container.classList.add("hidden");
+    return;
+  }
+
+  let html = `<h3>Rate Change Impact</h3>
+    <table border="1" cellpadding="5" cellspacing="0">
+      <tr><th>Month</th><th>New Rate (%)</th><th>Revised EMI ($)</th></tr>`;
+  emiUpdates.forEach(u => {
+    html += `<tr>
+      <td>${u.month}</td>
+      <td>${u.newRate.toFixed(2)}</td>
+      <td>$${u.newEMI.toFixed(2)}</td>
+    </tr>`;
+  });
+  html += "</table>";
+  container.innerHTML = html;
+  container.classList.remove("hidden");
+  container.classList.add("fade-in");
+}
+
+
+// Block right-click and keyboard shortcuts with alerts
+document.addEventListener("contextmenu", e => {
+  e.preventDefault();
+  alert("Right-click is disabled on this page.");
+});
+
+document.addEventListener("copy", e => {
+  e.preventDefault();
+  alert("Copying content is disabled.");
+});
+
+document.addEventListener("cut", e => {
+  e.preventDefault();
+  alert("Cutting content is disabled.");
+});
+
+document.addEventListener("paste", e => {
+  e.preventDefault();
+  alert("Pasting is disabled.");
+});
+
+document.addEventListener("keydown", e => {
+  const key = e.key.toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && ["c", "v", "x", "a"].includes(key)) {
+    e.preventDefault();
+    switch (key) {
+      case "c": alert("Copying is disabled."); break;
+      case "v": alert("Pasting is disabled."); break;
+      case "x": alert("Cutting is disabled."); break;
+      case "a": alert("Select all is disabled."); break;
+    }
+  }
+});
+
+
+function exportCSV() {
+  if (!window.currentScheduleStd || !window.currentScheduleExtra) {
+    alert("Please calculate first.");
+    return;
+  }
+
+  const std = window.currentScheduleStd;
+  const extra = window.currentScheduleExtra;
+  const maxMonths = Math.max(std.length, extra.length);
+
+  const rows = [
+    [
+      "Month",
+      "Std Payment","Std Interest","Std Principal","Std Balance",
+      "Extra Payment","Extra Interest","Extra Principal","Extra Extra","Extra Balance"
+    ]
+  ];
+
+  for (let i = 0; i < maxMonths; i++) {
+    const s = std[i] || {};
+    const e = extra[i] || {};
+    rows.push([
+      i + 1,
+      s.payment !== undefined ? s.payment.toFixed(2) : "",
+      s.interest !== undefined ? s.interest.toFixed(2) : "",
+      s.principal !== undefined ? s.principal.toFixed(2) : "",
+      s.balance !== undefined ? s.balance.toFixed(2) : "",
+      e.payment !== undefined ? e.payment.toFixed(2) : "",
+      e.interest !== undefined ? e.interest.toFixed(2) : "",
+      e.principal !== undefined ? e.principal.toFixed(2) : "",
+      e.extra !== undefined ? e.extra.toFixed(2) : "",
+      e.balance !== undefined ? e.balance.toFixed(2) : ""
+    ]);
+  }
+
+  const csvContent = rows.map(r => r.join(",")).join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "loan_schedule_comparison.csv";
+  link.click();
+}
+  </script>
+</body>
+</html>
